@@ -1,8 +1,5 @@
-﻿<!-- HomePage.razor -->
-@page "/"
+﻿@page "/"
 @inject HttpClient Http
-
-
 <h3>Unit Costs</h3>
 
 @if (UnitCosts == null)
@@ -98,6 +95,9 @@ else
 
     private async Task SubmitForm()
     {
+        // Validate the form before sending the request
+        if (NewUnitCost == null) return;
+
         var response = await Http.PostAsJsonAsync("api/UnitCost", NewUnitCost);
 
         if (response.IsSuccessStatusCode)
