@@ -1,39 +1,81 @@
-**Exchange Data in Secure Manner - ASP.NET Core Web API with Clean Architecture**
+### Secure Data Exchange with ASP.NET Core Web API (Clean Architecture) Guide
 
-This project demonstrates an ASP.NET Core Web API with clean architecture principles, using JWT Authentication for secure data exchange. It includes features like user registration, login, and managing employee details.
+This project follows clean architecture principles to create a robust and maintainable ASP.NET Core Web API with JWT Authentication. Below is a step-by-step guide to help you set up and understand the project.
 
-**Project Structure**
+---
 
-The project is organized using clean architecture:
+### **Project Structure Overview**
 
-Application Layer: Contains interfaces and DTOs (Data Transfer Objects).
-Domain Layer: Holds the core entities/models of the project.
-Infrastructure Layer: Handles database interactions using Entity Framework Core.
-Web API Layer: Manages the REST API controllers for handling client requests.
-Prerequisites
+1. **Application Layer**  
+   - Houses interfaces, DTOs, business logic, and validation rules.
+   - Acts as a mediator between the Domain and Infrastructure layers.
+   
+2. **Domain Layer**  
+   - Contains the core entities/models of the project.
+   - Central to the architecture and independent of external dependencies.
 
-**Make sure you have the following installed:**
+3. **Infrastructure Layer**  
+   - Responsible for data access using Entity Framework Core.
+   - Implements interfaces from the Application Layer.
 
-.NET 9 SDK
-SQL Server
-Visual Studio 2022
-Setup Guide
+4. **Web API Layer**  
+   - Hosts the controllers to manage client requests.
+   - Includes configurations for routing, Swagger documentation, and authentication.
 
-**Clone the Repository**
-Database Configuration
-Open appsettings.json and update the connection string with your SQL Server details:
-"ConnectionStrings": {
-    "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=YOUR_DATABASE_NAME;User ID=YOUR_USER_ID;Password=YOUR_PASSWORD;"
-}
-**Ensure your SQL Server is running.**
-Run Migrations
-Open the Package Manager Console in Visual Studio.
-Run the following command to create the database:
-Update-Database
-Build and Run the Application
-Open the solution in Visual Studio.
-Set the Web API project as the startup project.
-Press F5 or run the application using:
-dotnet run
-The API and Swagger documentation should now be accessible at https://localhost:5001/swagger
+---
+
+### **Prerequisites**
+
+Ensure you have installed:
+
+- **.NET 9 SDK**
+- **SQL Server** (with a valid running instance)
+- **Visual Studio 2022** or another suitable IDE
+
+---
+
+### **Setup Guide**
+
+#### **Step 1: Clone the Repository**
+Use the following command to clone the repository:
+```bash
+git clone <repository-url>
+cd <repository-folder>
+```
+
+#### **Step 2: Configure the Database**
+
+1. Open `appsettings.json` in the Web API project.
+2. Update the `DefaultConnection` string:
+    ```json
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=YOUR_DATABASE_NAME;User ID=YOUR_USER_ID;Password=YOUR_PASSWORD;"
+    }
+    ```
+
+3. Ensure your SQL Server instance is running.
+
+#### **Step 3: Run Entity Framework Migrations**
+
+1. Open **Package Manager Console** in Visual Studio.
+2. Run the following commands:
+    ```powershell
+    Add-Migration InitialCreate
+    Update-Database
+    ```
+
+#### **Step 4: Build and Run the Application**
+
+1. Set the Web API project as the startup project in Visual Studio.
+2. Press `F5` to run the application or execute:
+    ```bash
+    dotnet run
+    ```
+
+3. The Swagger documentation should now be accessible at:
+    ```
+    https://localhost:5001/swagger
+    ```
+
+---
 
