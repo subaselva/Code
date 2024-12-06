@@ -1,4 +1,5 @@
 ﻿@page "/"
+
 @inject HttpClient Http
 <h3>Unit Costs</h3>
 
@@ -14,11 +15,15 @@ else
                 <th>ID</th>
                 <th>Unit Code Area</th>
                 <th>Material Name</th>
+                <th>Brand Name</th>
+                <th>Supplier Details</th>
+                <th>Material Needed In</th>
                 <th>Unit Price</th>
                 <th>Number of Units</th>
                 <th>Total Material Cost</th>
                 <th>Labour Area</th>
                 <th>Labour Cost Per Unit</th>
+                <th>Man Hours</th>
                 <th>Total Labour Cost</th>
                 <th>Total Cost of Unit</th>
                 <th>Actions</th>
@@ -31,11 +36,15 @@ else
                     <td>@unitCost.Id</td>
                     <td>@unitCost.UnitCodeArea</td>
                     <td>@unitCost.MaterialName</td>
+                    <td>@unitCost.BrandName</td>
+                    <td>@unitCost.SupplierDetails</td>
+                    <td>@unitCost.MaterialNeededIn</td>
                     <td>@unitCost.UnitPrice</td>
                     <td>@unitCost.NumberOfUnits</td>
                     <td>@unitCost.TotalMaterialCost</td>
                     <td>@unitCost.LabourArea</td>
                     <td>@unitCost.LabourCostPerUnit</td>
+                    <td>@unitCost.ManHours</td>
                     <td>@unitCost.TotalLabourCost</td>
                     <td>@unitCost.TotalCostOfUnit</td>
                     <td>
@@ -61,6 +70,18 @@ else
         <InputText @bind-Value="NewUnitCost.MaterialName" class="form-control" />
     </div>
     <div>
+        <label>Brand Name:</label>
+        <InputText @bind-Value="NewUnitCost.BrandName" class="form-control" />
+    </div>
+    <div>
+        <label>Supplier Details:</label>
+        <InputText @bind-Value="NewUnitCost.SupplierDetails" class="form-control" />
+    </div>
+    <div>
+        <label>Material Needed In:</label>
+        <InputText @bind-Value="NewUnitCost.MaterialNeededIn" class="form-control" />
+    </div>
+    <div>
         <label>Unit Price:</label>
         <InputNumber @bind-Value="NewUnitCost.UnitPrice" class="form-control" />
     </div>
@@ -69,12 +90,16 @@ else
         <InputNumber @bind-Value="NewUnitCost.NumberOfUnits" class="form-control" />
     </div>
     <div>
-        <label>Labour Area (e.g., '200 sqft'):</label>
+        <label>Labour Area:</label>
         <InputText @bind-Value="NewUnitCost.LabourArea" class="form-control" />
     </div>
     <div>
         <label>Labour Cost Per Unit:</label>
         <InputNumber @bind-Value="NewUnitCost.LabourCostPerUnit" class="form-control" />
+    </div>
+    <div>
+        <label>Man Hours:</label>
+        <InputNumber @bind-Value="NewUnitCost.ManHours" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
@@ -95,16 +120,13 @@ else
 
     private async Task SubmitForm()
     {
-        // Validate the form before sending the request
-        if (NewUnitCost == null) return;
-
+        // Post the new unit cost to the API
         var response = await Http.PostAsJsonAsync("api/UnitCost", NewUnitCost);
 
         if (response.IsSuccessStatusCode)
         {
-            // Reload unit costs after a successful addition
-            await LoadUnitCosts();
-            NewUnitCost = new UnitCost(); // Reset form
+            await LoadUnitCosts(); // Reload the data after adding
+            NewUnitCost = new UnitCost(); // Reset the form
         }
     }
 
@@ -113,7 +135,7 @@ else
         var response = await Http.DeleteAsync($"api/UnitCost/{id}");
         if (response.IsSuccessStatusCode)
         {
-            await LoadUnitCosts(); // Reload data
+            await LoadUnitCosts(); // Reload the data after deletion
         }
     }
 
@@ -122,12 +144,16 @@ else
         public int Id { get; set; }
         public string UnitCodeArea { get; set; } = string.Empty;
         public string MaterialName { get; set; } = string.Empty;
+        public string BrandName { get; set; } = string.Empty;
+        public string SupplierDetails { get; set; } = string.Empty;
+        public string MaterialNeededIn { get; set; } = string.Empty;
         public decimal UnitPrice { get; set; }
         public int NumberOfUnits { get; set; }
-        public decimal TotalMaterialCost { get; set; }
+        public decimal TotalMaterialCost => UnitPrice * NumberOfUnits; // Calculated
         public string LabourArea { get; set; } = string.Empty;
         public decimal LabourCostPerUnit { get; set; }
-        public decimal TotalLabourCost { get; set; }
-        public decimal TotalCostOfUnit { get; set; }
+        public int ManHours { get; set; }
+        public decimal TotalLabourCost => LabourCostPerUnit * ManHours; // Calculated
+        public decimal TotalCostOfUnit => TotalMaterialCost + TotalLabourCost; // Calculated
     }
 }

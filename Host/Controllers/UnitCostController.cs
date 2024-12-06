@@ -32,6 +32,8 @@ namespace Host.Controllers
             await _unitCostService.AddUnitCostAsync(unitCost);
             return CreatedAtAction(nameof(GetAll), new { id = unitCost.UnitCodeArea }, unitCost);
         }
+        
+
     }
 
 }
