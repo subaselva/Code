@@ -1,0 +1,133 @@
+﻿<!-- HomePage.razor -->
+@page "/"
+@inject HttpClient Http
+
+
+<h3>Unit Costs</h3>
+
+@if (UnitCosts == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Unit Code Area</th>
+                <th>Material Name</th>
+                <th>Unit Price</th>
+                <th>Number of Units</th>
+                <th>Total Material Cost</th>
+                <th>Labour Area</th>
+                <th>Labour Cost Per Unit</th>
+                <th>Total Labour Cost</th>
+                <th>Total Cost of Unit</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unitCost in UnitCosts)
+            {
+                <tr>
+                    <td>@unitCost.Id</td>
+                    <td>@unitCost.UnitCodeArea</td>
+                    <td>@unitCost.MaterialName</td>
+                    <td>@unitCost.UnitPrice</td>
+                    <td>@unitCost.NumberOfUnits</td>
+                    <td>@unitCost.TotalMaterialCost</td>
+                    <td>@unitCost.LabourArea</td>
+                    <td>@unitCost.LabourCostPerUnit</td>
+                    <td>@unitCost.TotalLabourCost</td>
+                    <td>@unitCost.TotalCostOfUnit</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => DeleteUnitCost(unitCost.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h3>Add Unit Cost</h3>
+<EditForm Model="@NewUnitCost" OnValidSubmit="@SubmitForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Unit Code Area:</label>
+        <InputText @bind-Value="NewUnitCost.UnitCodeArea" class="form-control" />
+    </div>
+    <div>
+        <label>Material Name:</label>
+        <InputText @bind-Value="NewUnitCost.MaterialName" class="form-control" />
+    </div>
+    <div>
+        <label>Unit Price:</label>
+        <InputNumber @bind-Value="NewUnitCost.UnitPrice" class="form-control" />
+    </div>
+    <div>
+        <label>Number of Units:</label>
+        <InputNumber @bind-Value="NewUnitCost.NumberOfUnits" class="form-control" />
+    </div>
+    <div>
+        <label>Labour Area (e.g., '200 sqft'):</label>
+        <InputText @bind-Value="NewUnitCost.LabourArea" class="form-control" />
+    </div>
+    <div>
+        <label>Labour Cost Per Unit:</label>
+        <InputNumber @bind-Value="NewUnitCost.LabourCostPerUnit" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    private List<UnitCost>? UnitCosts;
+    private UnitCost NewUnitCost = new UnitCost();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUnitCosts();
+    }
+
+    private async Task LoadUnitCosts()
+    {
+        UnitCosts = await Http.GetFromJsonAsync<List<UnitCost>>("api/UnitCost");
+    }
+
+    private async Task SubmitForm()
+    {
+        var response = await Http.PostAsJsonAsync("api/UnitCost", NewUnitCost);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Reload unit costs after a successful addition
+            await LoadUnitCosts();
+            NewUnitCost = new UnitCost(); // Reset form
+        }
+    }
+
+    private async Task DeleteUnitCost(int id)
+    {
+        var response = await Http.DeleteAsync($"api/UnitCost/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadUnitCosts(); // Reload data
+        }
+    }
+
+    public class UnitCost
+    {
+        public int Id { get; set; }
+        public string UnitCodeArea { get; set; } = string.Empty;
+        public string MaterialName { get; set; } = string.Empty;
+        public decimal UnitPrice { get; set; }
+        public int NumberOfUnits { get; set; }
+        public decimal TotalMaterialCost { get; set; }
+        public string LabourArea { get; set; } = string.Empty;
+        public decimal LabourCostPerUnit { get; set; }
+        public decimal TotalLabourCost { get; set; }
+        public decimal TotalCostOfUnit { get; set; }
+    }
+}
